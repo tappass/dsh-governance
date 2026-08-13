@@ -37,16 +37,32 @@ What this establishes:
 This runs in CI on every push, so the "governs real dsh tool calls" claim is
 continuously enforced, not a one-off screenshot.
 
-## Against a real TapPass instance
+## Against a real TapPass instance (executed)
 
 The same harness governs against a live `/v1/govern` when you point it there:
 
 ```sh
-TAPPASS_BASE_URL=https://staging-api.tappass.ai \
+TAPPASS_BASE_URL=https://staging.tappass.ai \
 TAPPASS_API_KEY=tp_dev_... \
-BLOCK_TOOL=<a tool your policy blocks> \
+BLOCK_TOOL=exfiltrate_secrets \
+EXPECT_ALLOW=0 \
 npm run proof
 ```
 
-That exercises the full path end to end: real dsh runtime, real network call,
-real policy engine, real verdict.
+This was run against a live staging TapPass. The plugin, inside the real dsh
+runtime, made real network calls to `/v1/govern` with a real developer key and
+received real `block` verdicts; both governed tools were stopped before their
+bodies ran:
+
+```
+[proof] governing against REAL TapPass at https://staging.tappass.ai
+[proof] list_files: isError=true content="Error: provider_not_allowed"
+[proof] exfiltrate_secrets: isError=true content="Error: provider_not_allowed"
+[proof] tool bodies that actually ran: []
+[proof] PASS: the plugin honored the real /v1/govern block verdict; the tool body never ran.
+```
+
+`EXPECT_ALLOW=0` is the honest mode for a fresh agent whose org policy floor
+denies every tool call: it asserts only that governed calls are stopped, without
+manufacturing an allow the real policy would not grant. The allow path (a verdict
+letting a tool run) is exercised by the default local/CI proof above.

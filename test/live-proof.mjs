@@ -97,6 +97,19 @@ async function main() {
   console.log(`[proof] ${BLOCK_TOOL}: isError=${block.isError} content=${JSON.stringify(text(block))}`)
   console.log(`[proof] tool bodies that actually ran: ${JSON.stringify(executed)}\n`)
 
+  // EXPECT_ALLOW=0 documents a deny-all baseline (e.g. a fresh staging agent
+  // whose org floor blocks every tool): assert only that governed calls are
+  // stopped before execution, without manufacturing an allow that the real
+  // policy would not grant.
+  if (process.env.EXPECT_ALLOW === '0') {
+    assert.equal(block.isError, true, 'blocked tool should error')
+    assert.ok(!executed.includes(BLOCK_TOOL), 'BLOCKED tool body must NOT have run')
+    assert.ok(text(block).length > 0, 'block result should carry a reason')
+    if (stub) stub.close()
+    console.log('[proof] PASS: the plugin honored the real /v1/govern block verdict; the tool body never ran.')
+    return
+  }
+
   // The claims we make at launch, asserted:
   assert.equal(allow.isError, false, 'allowed tool should succeed')
   assert.ok(executed.includes(ALLOW_TOOL), 'allowed tool body should have run')
