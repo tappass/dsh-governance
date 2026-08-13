@@ -1,0 +1,17 @@
+# TapPass governance bundle for DeepSeek Harness.
+#
+# `dsh plugin --profile <name> add @tappass/dsh-governance` appends this bundle
+# to the profile and mounts the plugin below. It ships in observe mode: every
+# tool call is sent to TapPass and recorded, nothing is blocked, until you set
+# mode to enforce.
+#
+# Config (all optional, see README):
+#   baseURL    TapPass API base (default https://api.tappass.ai)
+#   apiKeyEnv  env var holding your tp_dev_ key (default TAPPASS_API_KEY)
+#   mode       observe | enforce (default observe)
+#   onError    allow | deny when TapPass is unreachable in enforce (default deny)
+- insert:
+    - id: tappass-governance
+      name: '@tappass/dsh-governance'
+      config:
+        mode: observe
