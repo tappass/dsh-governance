@@ -113,19 +113,13 @@ function failOpenOrClosed(
   return next()
 }
 
-/**
- * Build the TOOL_CALL Behavior for a tool execution. Pure and exported so the
- * wire shape — including the declared `enforcement` posture that lets TapPass
- * record `pep_mode` — is unit-testable without a live harness or PDP.
- */
+/** Build the TOOL_CALL Behavior for a tool execution. Pure, so it is testable. */
 export function toolCallBehavior(config: Config, exec: ToolExecution): ToolCallBehavior {
   return {
     type: 'TOOL_CALL',
     agent_id: config.agentId ?? agentIdOf(exec) ?? 'deepseek-harness',
     session_id: sessionIdOf(exec) ?? 'dsh',
     payload: { tool: exec.name, args: normalizeArgs(exec.arguments), server: null },
-    // Declare our posture so a decided-block records whether we actually
-    // enforced it — observe mode watches, enforce mode honours.
     enforcement: { mode: config.mode },
     ...(config.orgId !== undefined ? { org_id: config.orgId } : {}),
   }
