@@ -1,0 +1,39 @@
+name: publish
+
+# Publishes @tappass/dsh-governance to npm when a version tag is pushed, using
+# npm TRUSTED PUBLISHING (OIDC) — no long-lived token, provenance generated
+# automatically.
+#
+#   npm version patch && git push --follow-tags
+#
+# One-time setup (npmjs.com → this package → Settings → Trusted Publisher):
+#   Provider = GitHub Actions
+#   Organization/Repository = tappass/dsh-governance
+#   Workflow filename        = publish.yml
+#   Environment              = (leave blank — this workflow declares none)
+# No NPM_TOKEN secret is needed once the trusted publisher is configured.
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC token for npm trusted publishing + provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+      # Trusted publishing (OIDC) requires npm >= 11.5.1; Node 24 ships older.
+      - run: npm install -g npm@latest
+      - run: npm install --no-audit --no-fund --legacy-peer-deps
+      - run: npm run build
+      - run: npm test
+      - run: npm run proof
+      # No NODE_AUTH_TOKEN: auth is the OIDC exchange (trusted publishing).
+      - run: npm publish --access public
