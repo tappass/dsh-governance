@@ -55,7 +55,7 @@ defaults are safe.
 
 | Key | Default | Meaning |
 |-----|---------|---------|
-| `baseURL` | `https://api.tappass.ai` | TapPass API base. The plugin POSTs to `${baseURL}/v1/govern`. |
+| `baseURL` | `https://app.tappass.ai` | TapPass API base. The plugin POSTs to `${baseURL}/v1/govern`. |
 | `apiKeyEnv` | `TAPPASS_API_KEY` | Env var holding your `tp_dev_` key. A reference, not the secret. |
 | `mode` | `observe` | `observe`: send and record every call, block nothing. `enforce`: honor verdicts. |
 | `onError` | `deny` | In `enforce`, when TapPass is unreachable: `deny` (fail closed) or `allow` (fail open). |

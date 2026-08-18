@@ -4,7 +4,14 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import http from 'node:http'
 
-import { mapVerdict, governToolCall, GovernError, toolCallBehavior } from '../lib/index.js'
+import { mapVerdict, governToolCall, GovernError, toolCallBehavior, Config } from '../lib/index.js'
+
+test('the default baseURL points at the live production host', () => {
+  // api.tappass.ai does not resolve; production /v1/govern is served on
+  // app.tappass.ai. A wrong default breaks every install that does not
+  // override baseURL.
+  assert.equal(Config({}).baseURL, 'https://app.tappass.ai')
+})
 
 // A minimal ToolExecution stub — enough for the pure behavior builder.
 const execStub = (over = {}) => ({
@@ -15,7 +22,7 @@ const execStub = (over = {}) => ({
 })
 
 const baseConfig = {
-  baseURL: 'https://api.tappass.ai',
+  baseURL: 'https://app.tappass.ai',
   apiKeyEnv: 'TAPPASS_API_KEY',
   mode: 'observe',
   onError: 'deny',
