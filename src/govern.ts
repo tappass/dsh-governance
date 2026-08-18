@@ -45,6 +45,12 @@ export interface ToolCallBehavior {
   session_id: string
   payload: { tool: string; args: Record<string, unknown>; server: string | null }
   org_id?: string
+  // This PEP's declared enforcement posture. A block TapPass decides is not
+  // necessarily one we enforce: in observe mode we receive the verdict but run
+  // the tool anyway. Declaring the posture lets TapPass record `pep_mode` and
+  // render a decided-but-not-enforced block honestly, instead of a flat
+  // "Blocked" that never happened. A declaration, not proof.
+  enforcement?: { mode: 'observe' | 'enforce' }
 }
 
 export interface GovernClientOptions {

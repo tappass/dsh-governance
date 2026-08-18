@@ -4,7 +4,41 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import http from 'node:http'
 
-import { mapVerdict, governToolCall, GovernError } from '../lib/index.js'
+import { mapVerdict, governToolCall, GovernError, toolCallBehavior } from '../lib/index.js'
+
+// A minimal ToolExecution stub — enough for the pure behavior builder.
+const execStub = (over = {}) => ({
+  name: 'bash',
+  arguments: { command: 'ls' },
+  agent: { id: 'agent-1', session: { id: 'sess-1' } },
+  ...over,
+})
+
+const baseConfig = {
+  baseURL: 'https://api.tappass.ai',
+  apiKeyEnv: 'TAPPASS_API_KEY',
+  mode: 'observe',
+  onError: 'deny',
+  timeoutMs: 4000,
+}
+
+test('the behavior declares the plugin enforcement posture so TapPass can record pep_mode', () => {
+  // observe → the audit trail must be able to show "decided but not enforced"
+  const observed = toolCallBehavior({ ...baseConfig, mode: 'observe' }, execStub())
+  assert.deepEqual(observed.enforcement, { mode: 'observe' })
+
+  const enforced = toolCallBehavior({ ...baseConfig, mode: 'enforce' }, execStub())
+  assert.deepEqual(enforced.enforcement, { mode: 'enforce' })
+})
+
+test('the behavior still carries the TOOL_CALL essentials', () => {
+  const b = toolCallBehavior(baseConfig, execStub())
+  assert.equal(b.type, 'TOOL_CALL')
+  assert.equal(b.payload.tool, 'bash')
+  assert.deepEqual(b.payload.args, { command: 'ls' })
+  assert.equal(b.agent_id, 'agent-1')
+  assert.equal(b.session_id, 'sess-1')
+})
 
 test('observe mode always proceeds, whatever the verdict', () => {
   for (const outcome of ['allow', 'block', 'needs_approval', 'modify']) {

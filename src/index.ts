@@ -76,13 +76,7 @@ export function apply(ctx: Context, config: Config): void {
       return failOpenOrClosed(config, next, 'TapPass credential missing')
     }
 
-    const behavior: ToolCallBehavior = {
-      type: 'TOOL_CALL',
-      agent_id: config.agentId ?? agentIdOf(exec) ?? 'deepseek-harness',
-      session_id: sessionIdOf(exec) ?? 'dsh',
-      payload: { tool: exec.name, args: normalizeArgs(exec.arguments), server: null },
-      ...(config.orgId !== undefined ? { org_id: config.orgId } : {}),
-    }
+    const behavior = toolCallBehavior(config, exec)
 
     let decision
     try {
@@ -117,6 +111,24 @@ function failOpenOrClosed(
     return { kind: 'deny', reason: `TapPass unavailable: ${reason}` }
   }
   return next()
+}
+
+/**
+ * Build the TOOL_CALL Behavior for a tool execution. Pure and exported so the
+ * wire shape — including the declared `enforcement` posture that lets TapPass
+ * record `pep_mode` — is unit-testable without a live harness or PDP.
+ */
+export function toolCallBehavior(config: Config, exec: ToolExecution): ToolCallBehavior {
+  return {
+    type: 'TOOL_CALL',
+    agent_id: config.agentId ?? agentIdOf(exec) ?? 'deepseek-harness',
+    session_id: sessionIdOf(exec) ?? 'dsh',
+    payload: { tool: exec.name, args: normalizeArgs(exec.arguments), server: null },
+    // Declare our posture so a decided-block records whether we actually
+    // enforced it — observe mode watches, enforce mode honours.
+    enforcement: { mode: config.mode },
+    ...(config.orgId !== undefined ? { org_id: config.orgId } : {}),
+  }
 }
 
 /** TapPass expects `args` to be a JSON object; wrap anything else as `{ input }`. */
