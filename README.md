@@ -84,6 +84,13 @@ In `observe` mode every call returns `next()`, but a would-be block or approval
 is still recorded server side and logged locally, so you can size your policy
 against real traffic before enforcing.
 
+The plugin declares its posture to TapPass on every call (`enforcement.mode` on
+the behavior), so the audit trail records `pep_mode` and can show a decided
+block that was **not enforced** (observe) distinctly from one that was — instead
+of attesting "Blocked" for a tool that actually ran. It is a declaration, not
+proof; the tamper-proof signal is verifying the returned `mandate` at the
+resource boundary.
+
 ## Honest limitations
 
 - **No argument rewriting.** DeepSeek Harness makes tool arguments read only at
