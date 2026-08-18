@@ -27,7 +27,7 @@ export interface Config {
 }
 
 export const Config: z<Config> = z.object({
-  baseURL: z.string().default('https://api.tappass.ai'),
+  baseURL: z.string().default('https://app.tappass.ai'),
   apiKeyEnv: z.string().role('credential-ref').default('TAPPASS_API_KEY'),
   mode: z.union(['observe', 'enforce'] as const).default('observe'),
   onError: z.union(['allow', 'deny'] as const).default('deny'),

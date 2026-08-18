@@ -51,7 +51,7 @@ export interface ToolCallBehavior {
 }
 
 export interface GovernClientOptions {
-  /** TapPass API base, e.g. `https://api.tappass.ai`. The plugin POSTs to `${baseURL}/v1/govern`. */
+  /** TapPass API base, e.g. `https://app.tappass.ai`. The plugin POSTs to `${baseURL}/v1/govern`. */
   baseURL: string
   /** A TapPass developer key (`tp_dev_...`), sent as `Authorization: Bearer`. */
   token: string

@@ -1,6 +1,6 @@
 {
   "name": "@tappass/dsh-governance",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "The authority layer for agentic AI, as a DeepSeek Harness plugin. Governs every tool call against your business rules via the TapPass /v1/govern policy decision point.",
   "keywords": [
     "dsh-plugin",

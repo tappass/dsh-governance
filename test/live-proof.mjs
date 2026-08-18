@@ -5,7 +5,7 @@
 //   node test/live-proof.mjs
 //
 // Against real staging instead of the local stub:
-//   TAPPASS_BASE_URL=https://staging-api.tappass.ai TAPPASS_API_KEY=tp_dev_... \
+//   TAPPASS_BASE_URL=https://staging.tappass.ai TAPPASS_API_KEY=tp_dev_... \
 //   BLOCK_TOOL=exfiltrate_secrets node test/live-proof.mjs
 import http from 'node:http'
 import assert from 'node:assert/strict'

@@ -6,7 +6,7 @@
 # mode to enforce.
 #
 # Config (all optional, see README):
-#   baseURL    TapPass API base (default https://api.tappass.ai)
+#   baseURL    TapPass API base (default https://app.tappass.ai)
 #   apiKeyEnv  env var holding your tp_dev_ key (default TAPPASS_API_KEY)
 #   mode       observe | enforce (default observe)
 #   onError    allow | deny when TapPass is unreachable in enforce (default deny)
